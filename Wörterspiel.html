@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Almanca-Türkçe Eşleştirme Oyunu</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+	 
+}
+
+
+
+
+
+
+
+
+    }
+
+   
+
+    #container {
+      background: #3d9095;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    input, button, select {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      width: 80%;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3d9095;
+    }
+
+    #result {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    #scoreDisplay {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    #germanWord {
+      display: inline-block;
+      background-color: #e0bbf9; /* Açık mor */
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 5px;
+      transition: background-color 0.4s ease, transform 0.3s ease;
+    }
+
+    #germanWord:hover {
+      background-color: #d1a3f6;
+      transform: scale(1.05);
+    }
+	body {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+}
+
+
+
+
+
+@media (max-width: 600px) {
+  .card, .button-container {
+    width: 90%;
+    font-size: 16px;
+  }
+
+  input, button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}
+
+
+button {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #4caf50;
+  transform: scale(1.05);
+}
+
+
+
+.bubbles {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+}
+
+.bubbles span {
+  position: absolute;
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  bottom: -20px;
+  border-radius: 50%;
+  animation: bubbleMove 10s linear infinite;
+  left: calc(100% * var(--i) / 30);
+  animation-delay: calc(var(--i) * -0.5s);
+}
+
+@keyframes bubbleMove {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 4;
+  }
+  50% {
+    opacity: 4;
+  }
+  100% {
+    transform: translateY(-100vh) scale(0.7);
+    opacity: 0;
+  }
+}
+
+
+
+
+
+  </style>
+</head>
+<body>
+
+<div class="bubbles">
+  <span style="--i:11"></span>
+  <span style="--i:19"></span>
+  <span style="--i:21"></span>
+  <span style="--i:8"></span>
+  <span style="--i:23"></span>
+  <span style="--i:12"></span>
+  <span style="--i:17"></span>
+  <span style="--i:14"></span>
+  <span style="--i:14"></span>
+  <span style="--i:25"></span>
+</div>
+
+
+
+
+<div style="position:absolute; bottom:0; width:100%; overflow:hidden; line-height:0;">
+  <svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100px; width: 100%;">
+    <path d="M0.00,49.98 C150.00,150.00 349.95,-50.00 500.00,49.98 L500.00,150.00 L0.00,150.00 Z"
+          style="stroke: none; fill: #ffffff;"></path>
+  </svg>
+</div>
+
+
+
+
+
+   <div id="container">
+    <h2>Almanca - Türkçe Eşleştirme Oyunu</h2>
+
+    <label for="category">Kategori:</label>
+    <select id="category" onchange="loadCategory()">
+      <option value="easy">Kolay</option>
+      <option value="medium">Orta</option>
+      <option value="hard">Zor</option>
+    </select>
+
+    <p><strong>Kelime:</strong> <span id="germanWord"></span></p>
+
+    <input type="text" id="userInput" placeholder="Türkçe karşılığı" />
+    <br />
+    
+
+    <p id="result"></p>
+    <p id="scoreDisplay">Doğru kelime sayısı: 0</p>
+  </div>
+  
+  <div class="button-container">
+    <button onclick="checkAnswer()">Kontrol Et</button>
+    <button onclick="nextWord()">Sonraki Kelime</button>
+	<button onclick="speakWord()">🔊 Sesli Okuma</button>
+  </div>
+
+  <script>
+    const wordCategories = {
+      easy: [
+       { german: "Solide", turkish: "sağlam" },
+       { german: "fleissig", turkish: "çalışkan" },
+       { german: "ausziehen", turkish: "taşınmak" },
+       { german: "einziehen", turkish: "bir eve taşınmak" },
+	   { german: "Abenteuer", turkish: "Macera" },
+	   { german: "Alltag", turkish: "günlük yaşam" },
+	   { german: "damals", turkish: "o zamanlar" },
+	   { german: "Dieb", turkish: "hırsız" },
+	   { german: "verbessern", turkish: "iyileştirmek" },
+	   { german: "Badehandtuch", turkish: "banyo havlusu" },
+	   { german: "spannend", turkish: "heyecanlı" },
+	   { german: "unterschiedlich", turkish: "değişik" },
+	   { german: "ändern", turkish: "değiştirmek" },
+	   { german: "halten", turkish: "tutmak" },
+	   { german: "freihalten", turkish: "açık tutmak" },
+	   { german: "bitten", turkish: "rica etmek" },
+	   { german: "beten", turkish: "dua etmek" },
+	   { german: "vermeiden", turkish: "sakınmak" },
+	   { german: "verbessern", turkish: "iyileştirmek" },
+	   { german: "herausfinden", turkish: "bir şeyi fark etmek" },
+	   { german: "auswandern", turkish: "göçetmek" },
+	   { german: "sich freuen", turkish: "sevinmek" },
+	   { german: "einstellen", turkish: "ayarlamak" },
+	   { german: "Gelegenheit", turkish: "fırsat" },
+	   { german: "Eindruck", turkish: "izlenim" },
+	   { german: "beeindrucken", turkish: "etkilemek" },
+      ],
+      medium: [
+       { german: "sich vorstellen", turkish: "hayal etmek" },
+       { german: "fortsetzen", turkish: "devam etmek" },
+       { german: "aufgeben", turkish: "vazgeçmek" },
+	   { german: "aufhören", turkish: "durdurmak" },
+	   { german: "produzieren", turkish: "üretmek" },
+	   { german: "Auswirkung", turkish: "etki" },
+	   { german: "nützlich", turkish: "faydalı" },
+	   { german: "Entwicklung", turkish: "gelişim" },
+	   { german: "Folge", turkish: "sonuç" },
+	   { german: "Durchsage", turkish: "duyuru" },
+	   { german: "Überblick", turkish: "genel bakış" },
+	   { german: "neidisch", turkish: "kıskanç" },
+	   { german: "nachholen", turkish: "telafi etmek" },
+	   { german: "ablenken", turkish: "dikkatini dağıtmak" },
+	   { german: "unwichtig", turkish: "önemsiz" },
+	   { german: "lebenlanges", turkish: "yaşamboyu" },
+	   { german: "bemühen", turkish: "yormak" },
+	   { german: "anstrengend", turkish: "yorucu" },
+	   { german: "Kompetent", turkish: "uzman" },
+	   { german: "besorgen", turkish: "sağlamak" },
+	   { german: "erleben", turkish: "yaşamak" },
+	   { german: "sodass", turkish: "böylelikle" },
+      ],
+      hard: [
+        { german: "Geschwindigkeit", turkish: "hız" },
+        { german: "Wahrscheinlichkeit", turkish: "olasılık" },
+        { german: "Unabhängigkeit", turkish: "bağımsızlık" }, 
+		{ german: "obdachlosigkeit", turkish: "evsizlik" },
+	    { german: "Ursache", turkish: "neden" },
+	    { german: "durcheinander", turkish: "karşılıklık" },
+	    { german: "durcheinanderbringen", turkish: "karıştırmak" },
+		{ german: "verraten", turkish: "ihanet etmek" },
+	    { german: "verhaften", turkish: "tutuklamak" },
+	    { german: "entstehen", turkish: "meydana gelmek" },
+	    { german: "bestehen", turkish: "var olmak" },
+	    { german: "konsum", turkish: "tüketim" },
+		{ german: "innenraum", turkish: "iç mekan" },
+		{ german: "Mageres Fleisch", turkish: "yağsız et" },
+	    { german: "umgehen", turkish: "başa çıkmak" },
+	    { german: "ertragen", turkish: "dayanmak" },
+		{ german: "Vergnügen", turkish: "memnunniyet" },
+		{ german: "verschieben", turkish: "ertelemek" },
+	    { german: "abheften", turkish: "dosyalamak" },
+	    { german: "erfüllen", turkish: "yerine getirmek" },
+		{ german: "einprägen", turkish: "damgalamak" },
+	    { german: "Gedächtnis", turkish: "hafıza" },
+	    { german: "aussetzen", turkish: "ara vermek" },
+	    { german: "üblich", turkish: "alışılmış" },
+	    { german: "merkwürdig", turkish: "kayda değer" },
+	    { german: "brutal", turkish: "vahşice" },
+	    { german: "vergeben", turkish: "bağışlamak" },
+		{ german: "zuverlässig", turkish: "güvenilir" },
+	    { german: "hervorragend", turkish: "olağanüstü" },
+		{ german: "Frist", turkish: "müddet" },
+		{ german: "einhalten", turkish: "uymak" },
+		{ german: "abhalten", turkish: "engellemek" },
+		{ german: "verschwenden", turkish: "israf etmek" },
+		{ german: "anwenden", turkish: "kullanmak" },
+		{ german: "unkompliziert", turkish: "sade" },
+		{ german: "Vorbereitung", turkish: "hazırlık" },
+		{ german: "Mutig", turkish: "cesur" },
+		{ german: "übertreiben", turkish: "abartmak" },
+		{ german: "gepflegt", turkish: "bakımlı" },
+	    { german: "Ausgerechnet", turkish: "ne tesadüf ki özelliklede" },
+		{ german: "Aufmerksamkeit", turkish: "dikkat" },
+		{ german: "auf/merken", turkish: "dikkat kesilmek" },
+        { german: "aufmerksam", turkish: "dikkatli" },
+		{ german: "vorsictig sein", turkish: "dikkatli olmak" },
+		{ german: "informieren- über", turkish: "bilgi vermek" },
+        { german: "sich informieren", turkish: "bilgi edinmek-okuyarak, araştırarak" },
+	    { german: "sich erkundigen", turkish: "bir şey hakkında bilgi almak -sorarak" },	
+	    { german: "woran", turkish: "neye/ne konuda" },
+		{ german: "sich gewöhnen an", turkish: "bir şeye alışmak" },
+		{ german: "gewöhnt sein an", turkish: "bir şeye alışkın olmak" },
+		{ german: "verzichten auf", turkish: "bir şeyden isteyerek feragat etmek" },
+		{ german: "informieren- über", turkish: "bilgi vermek" },
+		{ german: "gewöhnen an", turkish: "birini bir şeye alıştırmak" },
+	    { german: "sıch unterhalten", turkish: "sohbet etmek" },
+		{ german: "teilnehmen", turkish: "katılmak" },
+		{ german: "sich interessieren", turkish: "ilgilenmek" },
+		{ german: "anfangen", turkish: "başlamak" },
+		{ german: "sich vorbereiten", turkish: "hazırlanmak" },
+		{ german: "sich freuen", turkish: "sevinmek" },
+		{ german: "sich bedanken", turkish: "teşekkür etmek" },
+		{ german: "präsentieren", turkish: "sunum yapmak" },
+		{ german: "erzählen", turkish: "anlatmak" },
+		{ german: "sich errinern", turkish: "hatırlamak" },
+		{ german: "sich beschweren", turkish: "şikayet etmek" },
+		{ german: "streiten", turkish: "tartışmak" },
+		{ german: "beitragen", turkish: "katkıda bulunmak" },
+		{ german: "sich beklagen", turkish: "şikayet etmek" },
+		{ german: "wert auf etwas legen", turkish: "bir şeye önem vermek" },
+		{ german: "selbstständikeit", turkish: "bağımsızlık" },
+		{ german: "Gehaltsvorstellung", turkish: "maaş beklentisi" },
+		{ german: "überzeugen", turkish: "ikna etmek" },
+		{ german: "Einfall", turkish: "fikir" },
+		{ german: "einfallen", turkish: "aklına gelmek" },
+		{ german: "erforderlicht", turkish: "gerekli" },
+		{ german: "bestätigen", turkish: "onaylamak" },
+		{ german: "auffrischen", turkish: "tazelemek" },
+		{ germman: "angestrengt", turkish: "gergin" },
+		{ german: "rühmen", turkish: "övmek" },
+		{ german: "gelten", turkish: "geçerli olmak" },
+		{ german: "beziehung", turkish: "ilişki" },
+		{ german: "Pubertät", turkish: "ergenlik" },
+		{ german: "Umgebung", turkish: "çevre" },
+		{ german: "sich verständigen", turkish: "anlaşmak" },
+		{ german: "Vorurteil", turkish: "önyargı" },
+		{ german: "grenzenlos", turkish: "sınırsız" },
+		{ german: "Anweisung", turkish: "talimat" },
+		{ german: "verdauen", turkish: "sindirmek" },
+		{ german: "allermeiste", turkish: "en önemlisi" },
+		{ german: "Misstrauen", turkish: "güvensizlik" },
+		{ german: "Sehnsucht", turkish: "özlem" },
+		{ german: "schimpfen", turkish: "azarlamak" },
+		{ german: "verschwinden", turkish: "yok olmak" },
+		{ german: "Nıveau", turkish: "seviye" },
+		{ german: "ausgefallen", turkish: "iptal edilmiş" },
+		{ german: "erholen", turkish: "dinlenmek" },
+		{ german: "beherrschen", turkish: "hakim olmak" },
+		{ german: "korrigieren", turkish: "düzeltmek" },
+		{ german: "leihen", turkish: "ödünç almak" },
+		{ german: "eifersüchtig", turkish: "kıskanç" },
+		{ german: "kostenpflichtig", turkish: "ücretli" },
+		{ german: "leiblich", turkish: "öz" },
+		{ german: "Auswahl", turkish: "seçim" },
+		{ german: "wahl", turkish: "seçmek" },
+		{ german: "konsumieren", turkish: "tüketmek" },
+		{ german: "bewertung", turkish: "yorum" },
+		{ german: "Klamotten", turkish: "kıyafetler" },
+		{ german: "Kornzern", turkish: "holding" },
+		{ german: "ungepflegt", turkish: "bakımsız" },
+		{ german: "harmonisch", turkish: "uyumlu" },
+		{ german: "Konkurrenz", turkish: "rekabet" },
+		{ german: "Wettbewerb", turkish: "yarışma" },
+		{ german: "fliessend", turkish: "akıcı" },
+		{ german: "wahrnehmen", turkish: "farkına varmak" },
+		{ german: "faulenzen", turkish: "tembellik yapmak" },
+		{ german: "ängstigen", turkish: "korkuya düşürmek" },
+		{ german: "Voraussetzung", turkish: "şart" },
+		{ german: "mühsam", turkish: "zahmetli" },
+		{ german: "einsamkeit", turkish: "yalnızlık" },
+		{ german: "trödeln", turkish: "oyalanmak" },
+		{ german: "Werbung", turkish: "reklam" },
+		{ german: "täuschen", turkish: "aldatmak" },
+		{ german: "Schnäppchen", turkish: "kazançlı alışveriş" },
+		{ german: "schnappen", turkish: "yakalamak" },
+		{ german: "angenehm", turkish: "hoş" },
+		{ german: "einwickeln", turkish: "paketlemek" },
+		{ german: "kündbar", turkish: "iptal edilebilir" },
+		{ german: "Anzahl", turkish: "miktar" },
+		{ german: "verhalten", turkish: "davranmak" },
+		{ german: "ermöglichen", turkish: "mümküm kılmak" },
+		{ german: "Verhalten", turkish: "davranış" },
+		{ german: "berufstätig", turkish: "düzenli olarak bir işte çalışmak" },
+		{ german: "engagieren", turkish: "gönüllü olmak" },
+		{ german: "Echdaten", turkish: "ana bilgiler" },
+		{ german: "Enttäuschung", turkish: "hayal kırıklığı" },
+		{ german: "Unterkunft", turkish: "barınak" },
+		{ german: "mitteilen", turkish: "bildirmek" },
+		{ german: "lebhaft", turkish: "enerjik" },
+		{ german: "überprüfen", turkish: "kontrol etmek" },
+		{ german: "betrachten", turkish: "incelemek" },
+		{ german: "übertreiben", turkish: "abartmak" },
+		{ german: "überall", turkish: "her yerde" },
+		{ german: "schuften", turkish: "çok çalışmak" },
+		{ german: "lindern", turkish: "hafifletmek" },
+		{ german: "aussetzen", turkish: "ara vermek" },
+		{ german: "traumatiziert", turkish: "travmatize" },
+		{ german: "Frist", turkish: "süre" },
+		{ german: "darunter", turkish: "içinde" },
+		{ german: "hierher", turkish: "buraya" },
+		{ german: "verabschieden", turkish: "veda etmek" },
+		{ german: "einleben", turkish: "alışmak" },
+		{ german: "knüpfen", turkish: "bağlantı kurmak" },
+		{ german: "wagen", turkish: "cesaret etmek" },
+		{ german: "verwenden", turkish: "kuullanmak" },
+		{ german: "synonym", turkish: "eş anlamlı" },
+		{ german: "aussagen", turkish: "ifade etmek" },
+		{ german: "seltsam", turkish: "garip" },
+		{ german: "Expert", turkish: "uzman" },
+		{ german: "Analogie", turkish: "kıyas" },
+		{ german: "ausgewogen", turkish: "dengelenmiş" },
+		{ german: "solch-", turkish: "böyle" },
+		{ german: "trösten", turkish: "teselli etmek" },
+		{ german: "Der Rückhalt", turkish: "destek" },
+		{ german: "zufällig", turkish: "rastgele" },
+		{ german: "selbstverständlich", turkish: "elbette" },
+		{ german: "netürlich", turkish: "doğal" },
+		{ german: "gemischt", turkish: "karışık" },
+		{ german: "gigantisch", turkish: "devasa" },
+		{ german: "albern", turkish: "çocukça" },
+		{ german: "indiskret", turkish: "patavatsız" },
+		{ german: "menschenleer", turkish: "terk edilmiş" },
+		{ german: "um jeden Preis", turkish: "ne pahasına olursa olsun" },
+		{ german: "nutzen", turkish: "faydalanmak" },
+		{ german: "ähnlich", turkish: "benzer" },
+		{ german: "verbrauchen", turkish: "tüketmek" },
+		{ german: "werben", turkish: "reklam yapmak" },
+		{ german: "absenden", turkish: "göndermek" },
+		{ german: "raten", turkish: "tahmin etmek" },
+		{ german: "voraussetzen", turkish: "varsaymak" },
+		{ german: "behandeln", turkish: "bir şeyi ele alma" },
+		{ german: "erhalten", turkish: "bir şeyi edinme" },
+		{ german: "bemerken", turkish: "dikkatle fark etmek" },
+		{ german: "auffallen", turkish: "göze çarpmak" },
+		{ german: "bewältigen", turkish: "-in hakkından gelmek" },
+		{ german: "beachten", turkish: "dikkate almak" },
+		{ german: "überfordern", turkish: "zorlanmak" },
+		{ german: "unterfordern", turkish: "az zorlanmak" },
+		{ german: "aufnehmen", turkish: "kaydetmek" },
+		{ german: "annehmen", turkish: "kabul etmek" },
+		{ german: "zwingen", turkish: "zorlanmak" },
+		{ german: "generalisieren", turkish: "genellemek" },
+		{ german: "anhalten", turkish: "kabul etmek" },
+		{ german: "besizten", turkish: "sahip olmak" },
+		{ german: "nochleben", turkish: "yeniden başlamak" },
+		
+      ]
+   
+
+}
+
+    let currentCategory = "easy";
+    let currentWord = {};
+    let score = 0;
+
+    function loadCategory() {
+      currentCategory = document.getElementById("category").value;
+      score = 0;
+      document.getElementById("scoreDisplay").textContent = `Puan: ${score}`;
+      nextWord();
+    }
+
+    function nextWord() {
+      document.getElementById("result").textContent = "";
+      document.getElementById("userInput").value = "";
+
+      const selectedList = wordCategories[currentCategory];
+      currentWord = selectedList[Math.floor(Math.random() * selectedList.length)];
+      document.getElementById("germanWord").textContent = currentWord.german;
+    }
+
+    function checkAnswer() {
+      const userAnswer = document.getElementById("userInput").value.trim().toLowerCase();
+      const correctAnswer = currentWord.turkish.toLowerCase();
+
+      if (userAnswer === correctAnswer) {
+        score++;
+        document.getElementById("result").textContent = "Doğru!";
+        document.getElementById("result").style.color = "green";
+      } else {
+        document.getElementById("result").textContent = `Yanlış! Doğru cevap: ${currentWord.turkish}`;
+        document.getElementById("result").style.color = "red";
+      }
+
+      document.getElementById("scoreDisplay").textContent = `Puan: ${score}`;
+    }
+
+    // Sayfa açıldığında ilk kelimeyi getir
+    window.onload = nextWord;
+	
+  function speakWord() {
+    const word = document.getElementById("germanWord").textContent;
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "de-DE"; // Almanca aksan
+    speechSynthesis.speak(utterance);
+  }
+  
+  
+
+
+
+</script>
+
+</body>
+
+
+
+</html>
